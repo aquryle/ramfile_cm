@@ -1,17 +1,19 @@
-/* link_ram.ld - RAM上で動作するCortex-M33用リンカスクリプト */
+
 
 ENTRY(Reset_Handler)
 
 /* RAM領域定義 */
 MEMORY
 {
-    RAM (rwx) : ORIGIN = 0x20000000, LENGTH = 32K
+    RAM0 (rwx) : ORIGIN = 0x04000000, LENGTH = 16K
+    RAM1 (rwx) : ORIGIN = 0x20000000, LENGTH = 112K
 }
 
-/* スタックとヒープサイズ */
+/* スタック・ヒープはRAM1の末尾に配置 */
 STACK_SIZE = 2K;
 HEAP_SIZE  = 1K;
-_estack = ORIGIN(RAM) + LENGTH(RAM);
+_estack = ORIGIN(RAM1) + LENGTH(RAM1);
+
 
 /* セクション割り当て */
 SECTIONS
@@ -23,7 +25,7 @@ SECTIONS
         *(.text*)              /* コード */
         *(.rodata*)            /* 読み取り専用データ */
         _etext = .;            /* .textの終了アドレス */
-    } > RAM
+    } > RAM0
 
     /* 初期化済みデータ */
     .data :
@@ -31,7 +33,8 @@ SECTIONS
         _sdata = .;
         *(.data*)
         _edata = .;
-    } > RAM AT> RAM
+    } > RAM0
+
 
     /* 未初期化データ */
     .bss :
@@ -40,17 +43,19 @@ SECTIONS
         *(.bss*)
         *(COMMON)
         _ebss = .;
-    } > RAM
+    } > RAM0
+
 
     /* スタック領域 */
     .stack (NOLOAD):
     {
         . = . + STACK_SIZE;
-    } > RAM
+    } > RAM1
 
     /* ヒープ領域 */
     .heap (NOLOAD):
     {
         . = . + HEAP_SIZE;
-    } > RAM
+    } > RAM1
+
 }

@@ -31,20 +31,28 @@ g_pfnVectors:
 
 
 Reset_Handler:
-    /* BSSクリア */
+    /* データセクションのクリア */
+    LDR   R0, =_sdata
+    LDR   R1, =_edata
+clear_data_loop:
+    CMP   R0, R1
+    BGE   clear_bss
+    MOVS  R2, #0
+    STR   R2, [R0], #4
+    B     clear_data_loop
+
+clear_bss:
     LDR   R0, =_sbss
     LDR   R1, =_ebss
 clear_bss_loop:
     CMP   R0, R1
-    BGE   clear_bss_done
+    BGE   start_main
     MOVS  R2, #0
     STR   R2, [R0], #4
-    ADD   R0, R0, #4
     B     clear_bss_loop
-clear_bss_done:
 
-    /* メイン関数呼び出し */
-    BL main
+start_main:
+    BL    main   /* main() 呼び出し */
 
 hang:
     B hang
