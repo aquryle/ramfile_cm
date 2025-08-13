@@ -1,0 +1,47 @@
+https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads
+
+Windows (mingw-w64-x86_64) hosted cross toolchains
+AArch32 bare-metal target (arm-none-eabi) 
+arm-gnu-toolchain-14.3.rel1-mingw-w64-x86_64-arm-none-eabi.exe
+
+
+
+
+
+https://www.msys2.org/
+msys2-x86_64-20250622.exe
+
+
+ビルドにはarm-none-eabiとmakeを使う（CMakeは難しいから避けた）。
+ネイティブWindowsでこれらを使うと、bashコマンドが使えない、パス表記がややこしい、
+情報が少ない、そもそもgccがLinux用、など、面倒ポイントが多々あるので、
+MSYS2（WindowsからLinuxっぽいことができるソフト。仮想マシンではない）から
+ビルドツールを使えるようにする。
+
+
+
+
+インストールしておいたarm-none-eabiのパスをbashに追加する。
+（例）下記を.bashrcの最終行に追加する。
+Windowsのパス表現はそのままだと使えないので注意
+export PATH="$PATH:/c/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.3 rel1/bin"
+
+これ以降、シェルとしてMINGW64を利用する。
+また、通常のインストールでは、C:\msys64\home\usernameがシェルのホームディレクトリとして使える。
+ここにプロジェクトフォルダを作って開発をするのが楽。
+
+
+
+GNU makeをインストールする。makeコマンドを使えるようにする。
+$ pacman -S make
+
+下記を実行してインストールに問題ないか確認する。
+$ arm-none-eabi-gcc --version
+$ arm-none-eabi-ld --version
+$ make --version
+
+
+
+
+
+
